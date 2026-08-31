@@ -1,0 +1,16 @@
+{
+  "name": "ChannelSubscription",
+  "type": "object",
+  "properties": {
+    "creator_name": {
+      "type": "string"
+    },
+    "viewer_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "creator_name",
+    "viewer_id"
+  ]
+}
