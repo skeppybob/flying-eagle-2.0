@@ -1,0 +1,25 @@
+{
+  "name": "Friendship",
+  "type": "object",
+  "properties": {
+    "requester_callsign": {
+      "type": "string"
+    },
+    "recipient_callsign": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "requester_callsign",
+    "recipient_callsign",
+    "status"
+  ]
+}
