@@ -1,0 +1,20 @@
+{
+  "name": "GroupMessage",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string"
+    },
+    "sender_callsign": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "chat_id",
+    "sender_callsign",
+    "text"
+  ]
+}
