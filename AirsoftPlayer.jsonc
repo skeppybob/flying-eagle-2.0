@@ -1,0 +1,31 @@
+{
+  "name": "AirsoftPlayer",
+  "type": "object",
+  "properties": {
+    "callsign": {
+      "type": "string"
+    },
+    "password_hash": {
+      "type": "string"
+    },
+    "activity": {
+      "type": "string"
+    },
+    "last_heartbeat": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "icloud_email": {
+      "type": "string"
+    },
+    "google_chat": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "callsign",
+    "password_hash"
+  ]
+}
