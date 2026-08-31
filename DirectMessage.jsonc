@@ -1,0 +1,20 @@
+{
+  "name": "DirectMessage",
+  "type": "object",
+  "properties": {
+    "sender_callsign": {
+      "type": "string"
+    },
+    "recipient_callsign": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sender_callsign",
+    "recipient_callsign",
+    "text"
+  ]
+}
