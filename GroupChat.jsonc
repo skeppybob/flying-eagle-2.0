@@ -1,0 +1,16 @@
+{
+  "name": "GroupChat",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "created_by_callsign": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "created_by_callsign"
+  ]
+}
