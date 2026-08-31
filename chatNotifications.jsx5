@@ -1,0 +1,80 @@
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { useCallsignAuth } from "@/lib/callsignAuth";
+
+const Ctx = createContext(null);
+export const useChatNotifications = () => useContext(Ctx);
+
+export function ChatNotificationsProvider({ children }) {
+  const { player } = useCallsignAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [chatIds, setChatIds] = useState([]);
+  const [unread, setUnread] = useState({});
+  const [banner, setBanner] = useState(null);
+
+  const activeChatId = location.pathname.startsWith("/chat/") ? location.pathname.split("/chat/")[1] : null;
+
+  const loadMemberships = useCallback(async () => {
+    if (!player) { setChatIds([]); return; }
+    const members = await base44.entities.GroupChatMember.filter({ callsign: player.callsign });
+    setChatIds(members.map(m => m.chat_id));
+  }, [player]);
+
+  useEffect(() => { loadMemberships(); }, [loadMemberships]);
+
+  useEffect(() => {
+    if (!player) return;
+    const unsub = base44.entities.GroupChatMember.subscribe((ev) => {
+      if (ev.type === "create" && ev.data?.callsign === player.callsign) {
+        setChatIds(prev => prev.includes(ev.data.chat_id) ? prev : [...prev, ev.data.chat_id]);
+      }
+    });
+    return unsub;
+  }, [player]);
+
+  useEffect(() => {
+    if (!player || !chatIds.length) return;
+    const unsub = base44.entities.GroupMessage.subscribe((ev) => {
+      if (ev.type !== "create") return;
+      const msg = ev.data;
+      if (!chatIds.includes(msg.chat_id)) return;
+      if (msg.sender_callsign === player.callsign) return;
+      if (msg.chat_id === activeChatId) return;
+      setUnread(prev => ({ ...prev, [msg.chat_id]: (prev[msg.chat_id] || 0) + 1 }));
+      setBanner({ chat_id: msg.chat_id, sender: msg.sender_callsign, text: msg.text, key: Date.now() });
+    });
+    return unsub;
+  }, [player, chatIds, activeChatId]);
+
+  useEffect(() => {
+    if (!banner) return;
+    const t = setTimeout(() => setBanner(null), 4500);
+    return () => clearTimeout(t);
+  }, [banner]);
+
+  const markChatRead = useCallback((chat_id) => {
+    setUnread(prev => {
+      if (!prev[chat_id]) return prev;
+      const n = { ...prev }; delete n[chat_id]; return n;
+    });
+  }, []);
+
+  const totalUnread = Object.values(unread).reduce((a, b) => a + b, 0);
+
+  return (
+    <Ctx.Provider value={{ totalUnread, unread, markChatRead, reloadMemberships: loadMemberships }}>
+      {children}
+      {banner && (
+        <button
+          onClick={() => { navigate(`/chat/${banner.chat_id}`); setBanner(null); }}
+          className="fixed bottom-5 right-5 z-50 max-w-xs rounded-sm border border-white/15 bg-[#2c2c2c] p-4 text-left shadow-2xl transition hover:bg-[#353535]"
+        >
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/50">New message · @{banner.sender}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-white">{banner.text}</p>
+        </button>
+      )}
+    </Ctx.Provider>
+  );
+}
