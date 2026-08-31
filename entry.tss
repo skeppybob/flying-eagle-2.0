@@ -1,0 +1,38 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+
+const JOIN_BASE = "https://eagle-battle-feed.base44.app/chats?join=";
+
+export default async function(req) {
+  try {
+    const base44 = createClientFromRequest(req);
+    const body = await req.json().catch(() => ({}));
+    const { invitation_id, chat_name } = body || {};
+    if (!invitation_id) return Response.json({ error: "Missing invitation_id" }, { status: 400 });
+
+    let inv;
+    try { inv = await base44.asServiceRole.entities.ChatInvitation.get(invitation_id); }
+    catch { return Response.json({ error: "Invitation not found" }, { status: 404 }); }
+    if (!inv) return Response.json({ error: "Invitation not found" }, { status: 404 });
+
+    if (inv.contact_type !== "email" || !inv.contact || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(inv.contact)) {
+      return Response.json({ skipped: true, reason: "Contact is not a valid email" });
+    }
+
+    const members = await base44.asServiceRole.entities.GroupChatMember.filter({
+      chat_id: inv.chat_id,
+      callsign: inv.invited_by_callsign,
+    });
+    if (!members.length) return Response.json({ error: "Inviter is not a member of this chat" }, { status: 403 });
+
+    const joinUrl = JOIN_BASE + encodeURIComponent(inv.token);
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to: inv.contact,
+      subject: "You're invited to join a Flying Eagle group chat",
+      body: inv.invited_by_callsign + " invited you to join the group chat \"" + (chat_name || "a group chat") + "\" on TheFlyingEagle.\n\nTap to join: " + joinUrl,
+    });
+
+    return Response.json({ ok: true, join_url: joinUrl });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
