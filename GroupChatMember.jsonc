@@ -1,0 +1,16 @@
+{
+  "name": "GroupChatMember",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string"
+    },
+    "callsign": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "chat_id",
+    "callsign"
+  ]
+}
