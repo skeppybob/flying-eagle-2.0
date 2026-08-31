@@ -1,0 +1,36 @@
+{
+  "name": "AirsoftEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private"
+      ],
+      "default": "public"
+    },
+    "host_callsign": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "event_date",
+    "visibility",
+    "host_callsign"
+  ]
+}
