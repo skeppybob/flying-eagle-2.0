@@ -1,0 +1,44 @@
+{
+  "name": "ChatInvitation",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "contact_type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "phone",
+        "icloud"
+      ]
+    },
+    "token": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "joined"
+      ],
+      "default": "pending"
+    },
+    "invited_by_callsign": {
+      "type": "string"
+    },
+    "joined_callsign": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "chat_id",
+    "contact",
+    "contact_type",
+    "token",
+    "invited_by_callsign"
+  ]
+}
