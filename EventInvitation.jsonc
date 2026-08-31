@@ -1,0 +1,26 @@
+{
+  "name": "EventInvitation",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "invitee_callsign": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "event_id",
+    "invitee_callsign",
+    "status"
+  ]
+}
